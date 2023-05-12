@@ -6,21 +6,21 @@
 
 struct Inventory
 {
-	float x;
-	float y;
-	float item_size;
+	float x; // x position in world
+	float y; // y position in world
+	float item_size; // item size in slot
 
-	int selected;
+	int selected; // index of selected slot
 
-	int items[8];
-	int costs[8];
+	int items[8]; // array of items
+	int costs[8]; // gold cost of item (Not currently used)
 
-	TexturePack * texture_pack;
+	TexturePack * texture_pack; // Texture pack used to render items in slots
 };
 typedef struct Inventory Inventory;
 
 void AddItem(Inventory *, int);
 void DrawInventory(Inventory);
-int InventoryClicked(Inventory *);
+int InventoryClicked(Inventory *); // Process click event and returns 1 if inventory is clicked, 0 if not.
 
 #endif

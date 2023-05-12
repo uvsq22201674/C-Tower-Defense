@@ -7,8 +7,8 @@ struct Level
 {
 	Tile tiles[200][200];
 
-	int width;
-	int height;
+	int width; // Nbr of tiles in width
+	int height; // Nbr of tiles in height
 	//TODO
 };
 typedef struct Level Level;

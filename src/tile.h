@@ -13,8 +13,8 @@ typedef enum TileType TileType;
 
 struct Tile
 {
-	Vector2 position;
-	Vector2 size;
+	Vector2 position; // position in world
+	Vector2 size; // width and height
 
 	Color color;
 	TileType type;
@@ -22,7 +22,7 @@ struct Tile
 typedef struct Tile Tile;
 
 Tile CreateTile(float x, float y, float width, float height, TileType type);
-int IsInTile(Tile tile, float x, float y);
-Color TileTypeColor(TileType);
+int IsInTile(Tile tile, float x, float y); // Checks if P(x;y) is in tile
+Color TileTypeColor(TileType); // Returns according tile color
 
 #endif

@@ -13,13 +13,16 @@ int main(int argc, char ** argv)
 	SetTargetFPS(60);
 	SetWindowState(FLAG_VSYNC_HINT);
 
+	//Loading texture pack
 	TexturePack pack = {0};
 	SetItemTexture(&pack, Turret, "images/turret.png");
 	SetItemTexture(&pack, Healer, "images/healer.png");
 	SetItemTexture(&pack, Bomb, "images/bomb.png");
 
+	//Loading tiles
 	Level l = LoadLevel("levels/test.lvl");
 	
+	//Inventory
 	Inventory inv = {0};
 	inv.x = 10.f;
 	inv.y = 10.f;
@@ -30,34 +33,39 @@ int main(int argc, char ** argv)
 	AddItem(&inv, Bomb);
 	AddItem(&inv, Healer);
 
-	Camera2D cam = {0};
-	cam.zoom = 1.f;
-
+	//Building list (fills when user clicks)
 	Building buildings[100] = {0};
 	int buildings_count = 0;
+
+	//Camera
+	Camera2D cam = {0};
+	cam.zoom = 1.f;
 
 	const float zoom_precision = 15.f;
 
 	while(!WindowShouldClose())
 	{
+
+		//Camera zoom control
 		float scrolling = GetMouseWheelMove()/zoom_precision;
 		
 		if(scrolling != 0.f && cam.zoom + scrolling > 0.1f && cam.zoom + scrolling < 2.f)
 		{
 			cam.zoom += scrolling;
-			//TODO
 		}
 
+		//Camera position control
 		if(IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
 		{
 			cam.target.x -= GetMouseDelta().x / cam.zoom;
 			cam.target.y -= GetMouseDelta().y / cam.zoom;
 		}
+		//Left click
 		else if(InventoryClicked(&inv))
 		{}
 		else if(IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 		{
-
+			//Placing new building if tile is valid (Not a path and not already taken)
 			Rectangle rect = {GetScreenToWorld2D(GetMousePosition(), cam).x,
 							  GetScreenToWorld2D(GetMousePosition(), cam).y,
 							  100.f, 100.f};
@@ -90,11 +98,13 @@ int main(int argc, char ** argv)
 			ClearBackground(BLACK);
 			
 			BeginMode2D(cam);
+				//Drawing tiles
 				for(int y = 0; y < l.height; y++)
 				{
 					for(int x = 0; x < l.width; x++)
 						DrawRectangleV(l.tiles[y][x].position, l.tiles[y][x].size, l.tiles[y][x].color);
 				}
+				//Drawing buildings
 				for(int i = 0; i < buildings_count; i++)
 				{
 					buildings[i].rotation += 1.f;
@@ -107,6 +117,7 @@ int main(int argc, char ** argv)
 
 	}
 
+	//End
 	UnloadTexturePack(&pack);
 
 	return EXIT_SUCCESS;

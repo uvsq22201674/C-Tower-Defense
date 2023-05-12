@@ -13,9 +13,9 @@ typedef enum Item Item;
 
 struct Building
 {
-	float x;
-	float y;
-	float size;
+	float x; // x position in world
+	float y; // y position in world
+	float size; // size of every of its side
 
 	float rotation;
 
@@ -30,7 +30,7 @@ struct TexturePack
 typedef struct TexturePack TexturePack;
 
 void SetItemTexture(TexturePack *, Item, char *);
-void UnloadTexturePack(TexturePack * pack);
+void UnloadTexturePack(TexturePack * pack); // Frees loaded textures
 void DrawBuilding(Building);
 
 #endif
