@@ -1,20 +1,22 @@
 #include "inventory.h"
 #include "item.h"
 #include <stdio.h>
+#include <string.h>
 
-void AddItem(Inventory * inv, int item)
+void AddItem(Inventory * inv, int item, int price)
 {
 	for(int i = 0; i < 8; i++)
 	{
 		if(inv->items[i] == 0)
 		{
 			inv->items[i] = item;
+			inv->costs[i] = price;
 			break;
 		}
 	}
 }
 
-void DrawInventory(Inventory inv)
+void DrawInventory(Inventory inv, int money)
 {
 	DrawRectangle(inv.x, inv.y, inv.item_size + 10, (inv.item_size + 5) * 8 + 5, BROWN);
 
@@ -22,7 +24,7 @@ void DrawInventory(Inventory inv)
 	{
 		Color color = MAROON;
 		if(inv.selected == i)
-			color = YELLOW;
+			color = BEIGE;
 
 		DrawRectangle(inv.x + 5, inv.y + i * inv.item_size + 5 * (i + 1), inv.item_size, inv.item_size, color);
 
@@ -31,6 +33,15 @@ void DrawInventory(Inventory inv)
 			Texture2D * t = &(inv.texture_pack->textures[inv.items[i]]);
 			Vector2 pos = {inv.x + 5, inv.y + i * inv.item_size + 5 * (i + 1)};
 			DrawTextureEx(*t, pos, 0.f, inv.item_size / (float) (t->width), WHITE);
+		
+			char cost[12];
+			sprintf(cost, "%d", inv.costs[i]);
+			strcat(cost, " $");
+			Color color = YELLOW;
+			if(money < inv.costs[i])
+				color = RED;
+
+			DrawText(cost, pos.x, pos.y, 10, color);
 		}
 	}
 }

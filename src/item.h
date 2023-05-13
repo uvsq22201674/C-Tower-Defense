@@ -27,6 +27,7 @@ struct Building
 	Vector2 target;
 
 	int life;
+	int damages;
 };
 typedef struct Building Building;
 
@@ -36,6 +37,7 @@ struct TexturePack
 };
 typedef struct TexturePack TexturePack;
 
+Building CreateBuilding(float x, float y, Item type, TexturePack * pack);
 void SetItemTexture(TexturePack *, Item, char *);
 void UnloadTexturePack(TexturePack * pack); // Frees loaded textures
 void UpdateBuilding(Building * b, Mob * mobs, int mobs_count, Building * buildings, int buildings_count, TexturePack * pack);

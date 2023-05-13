@@ -19,8 +19,8 @@ struct Inventory
 };
 typedef struct Inventory Inventory;
 
-void AddItem(Inventory *, int);
-void DrawInventory(Inventory);
+void AddItem(Inventory *, int, int);
+void DrawInventory(Inventory, int);
 int InventoryClicked(Inventory *); // Process click event and returns 1 if inventory is clicked, 0 if not.
 
 #endif

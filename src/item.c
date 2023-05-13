@@ -1,6 +1,37 @@
 #include "item.h"
 #include <math.h>
 
+Building CreateBuilding(float x, float y, Item type, TexturePack * pack)
+{
+	Building b;
+	b.x = x;
+	b.y = y;
+	b.size = 100.f;
+	b.type = type;
+	b.rotation = 0.f;
+	b.texture = &pack->textures[type];
+	b.target.x = 0;
+	b.target.y = 0;
+
+	switch(type)
+	{
+		case Turret:
+			b.life = 100;
+			b.damages = 1;
+		break;
+		case Healer:
+			b.life = 10;
+			b.damages = 1;
+		break; 
+		case  Bomb:
+			b.life = 10;
+			b.damages = 50;
+		break;
+	}
+
+	return b;
+}
+
 void SetItemTexture(TexturePack * pack, Item item, char * path)
 {
 	pack->textures[item] = LoadTexture(path);
@@ -46,7 +77,7 @@ void UpdateBuilding(Building * b, Mob * mobs, int mobs_count, Building * buildin
 				b->target.x = m.body.x + m.body.width / 2.f;
 				b->target.y = m.body.y + m.body.height / 2.f;
 
-				mobs[i].life --;
+				mobs[i].life -= b->damages;
 
 				targeted = 1;
 				break;
@@ -80,7 +111,7 @@ void UpdateBuilding(Building * b, Mob * mobs, int mobs_count, Building * buildin
 				b->target.x = m.x;
 				b->target.y = m.y;
 
-				buildings[i].life ++;
+				buildings[i].life += b->damages;
 
 				targeted = 1;
 				break;
@@ -103,7 +134,7 @@ void UpdateBuilding(Building * b, Mob * mobs, int mobs_count, Building * buildin
 
 			if(m.dead == 0 && norm < 500)
 			{
-				mobs[i].life -= 50;
+				mobs[i].life -= b->damages;
 				b->life = 0;
 			}
 		}

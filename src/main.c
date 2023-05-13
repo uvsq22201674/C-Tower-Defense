@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <raylib.h>
+#include <string.h>
 #include "tile.h"
 #include "level.h"
 #include "inventory.h"
@@ -33,9 +34,11 @@ int main(int argc, char ** argv)
 	inv.item_size = 70.f;
 	inv.texture_pack = &pack;
 
-	AddItem(&inv, Turret);
-	AddItem(&inv, Bomb);
-	AddItem(&inv, Healer);
+	AddItem(&inv, Turret, 150);
+	AddItem(&inv, Bomb, 200);
+	AddItem(&inv, Healer, 25);
+
+	int money = 150;
 
 	//Building list (fills when user clicks)
 	Building buildings[100] = {0};
@@ -54,6 +57,9 @@ int main(int argc, char ** argv)
 	int frame_count = 0;
 	while(!WindowShouldClose())
 	{
+
+		if(frame_count % 10 == 0)
+			money ++;
 
 		if(mobs_count < MAX_MOB_COUNT && frame_count%60 == 0)
 		{
@@ -78,7 +84,7 @@ int main(int argc, char ** argv)
 		//Left click
 		else if(InventoryClicked(&inv))
 		{}
-		else if(IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+		else if(IsMouseButtonDown(MOUSE_BUTTON_LEFT) && money >= inv.costs[inv.selected])
 		{
 			//Placing new building if tile is valid (Not a path and not already taken)
 			Rectangle rect = {GetScreenToWorld2D(GetMousePosition(), cam).x,
@@ -100,15 +106,9 @@ int main(int argc, char ** argv)
 			}
 			if(can_place)
 			{
-				buildings[buildings_count].x = rect.x;
-				buildings[buildings_count].y = rect.y;
-				buildings[buildings_count].size = 100.f;
-				buildings[buildings_count].rotation = 0.f;
-				buildings[buildings_count].texture = &(pack.textures[inv.items[inv.selected]]);
-				buildings[buildings_count].type = inv.items[inv.selected];
-				buildings[buildings_count].target.x = 0;
-				buildings[buildings_count].target.y = 0;
-				buildings[buildings_count].life = 100;
+				money -= inv.costs[inv.selected];
+
+				buildings[buildings_count] = CreateBuilding(rect.x, rect.y, inv.items[inv.selected], &pack);
 				buildings_count ++;
 			}
 		}
@@ -140,8 +140,15 @@ int main(int argc, char ** argv)
 
 			EndMode2D();
 		
-			DrawInventory(inv);
-			
+			DrawInventory(inv, money);
+			char money_s[10];
+			sprintf(money_s, "%d", money);
+			char to_draw[18] = "Money : ";
+			strcat(to_draw, money_s);
+			strcat(to_draw, " $");
+
+			DrawText(to_draw, 10, 650, 20, YELLOW);
+
 			DrawFPS(10, 700);
 		EndDrawing();
 
