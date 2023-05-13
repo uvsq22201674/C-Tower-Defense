@@ -5,6 +5,9 @@
 #include "level.h"
 #include "inventory.h"
 #include "item.h"
+#include "mob.h"
+
+#define MAX_MOB_COUNT 100
 
 int main(int argc, char ** argv)
 {
@@ -18,6 +21,7 @@ int main(int argc, char ** argv)
 	SetItemTexture(&pack, Turret, "images/turret.png");
 	SetItemTexture(&pack, Healer, "images/healer.png");
 	SetItemTexture(&pack, Bomb, "images/bomb.png");
+	SetItemTexture(&pack, Rip, "images/rip.png");
 
 	//Loading tiles
 	Level l = LoadLevel("levels/test.lvl");
@@ -37,14 +41,25 @@ int main(int argc, char ** argv)
 	Building buildings[100] = {0};
 	int buildings_count = 0;
 
+	//Mob list
+	Mob mobs[MAX_MOB_COUNT] = {0};
+	int mobs_count = 0;
+
 	//Camera
 	Camera2D cam = {0};
 	cam.zoom = 1.f;
 
 	const float zoom_precision = 15.f;
 
+	int frame_count = 0;
 	while(!WindowShouldClose())
 	{
+
+		if(mobs_count < MAX_MOB_COUNT && frame_count%60 == 0)
+		{
+			mobs[mobs_count] = CreateMob(l);
+			mobs_count ++;
+		}
 
 		//Camera zoom control
 		float scrolling = GetMouseWheelMove()/zoom_precision;
@@ -90,9 +105,20 @@ int main(int argc, char ** argv)
 				buildings[buildings_count].size = 100.f;
 				buildings[buildings_count].rotation = 0.f;
 				buildings[buildings_count].texture = &(pack.textures[inv.items[inv.selected]]);
+				buildings[buildings_count].type = inv.items[inv.selected];
+				buildings[buildings_count].target.x = 0;
+				buildings[buildings_count].target.y = 0;
+				buildings[buildings_count].life = 100;
 				buildings_count ++;
 			}
 		}
+
+		for(int i = 0; i < mobs_count; i++)
+			UpdateMob(&mobs[i], l);
+		for(int i = 0; i < buildings_count; i++)
+		{
+			UpdateBuilding(&buildings[i], mobs, mobs_count, buildings, buildings_count, &pack);
+		}	
 
 		BeginDrawing();
 			ClearBackground(BLACK);
@@ -106,15 +132,20 @@ int main(int argc, char ** argv)
 				}
 				//Drawing buildings
 				for(int i = 0; i < buildings_count; i++)
-				{
-					buildings[i].rotation += 1.f;
 					DrawBuilding(buildings[i]);
-				}
+
+				//Drawing mobs
+				for(int i = 0; i < mobs_count; i++)
+					DrawMob(mobs[i]);
+
 			EndMode2D();
 		
 			DrawInventory(inv);
+			
+			DrawFPS(10, 700);
 		EndDrawing();
 
+		frame_count++;
 	}
 
 	//End

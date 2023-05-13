@@ -1,2 +1,2 @@
 cd ../
-gcc src/*.c -o C-Tower-Defense.out -lraylib && ./C-Tower-Defense.out
+gcc src/*.c -o C-Tower-Defense.out -lraylib -lm && ./C-Tower-Defense.out
