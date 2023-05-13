@@ -25,7 +25,7 @@ Building CreateBuilding(float x, float y, Item type, TexturePack * pack)
 		break; 
 		case  Bomb:
 			b.life = 10;
-			b.damages = 50;
+			b.damages = 100;
 		break;
 	}
 
@@ -44,7 +44,7 @@ void UnloadTexturePack(TexturePack * pack)
 	}
 }
 
-void UpdateBuilding(Building * b, Mob * mobs, int mobs_count, Building * buildings, int buildings_count, TexturePack * pack)
+void UpdateBuilding(Building * b, Mob * mobs, int mobs_count, Building * buildings, int buildings_count, TexturePack * pack, int * money)
 {
 	if(b->life <= 0)
 		{
@@ -78,6 +78,8 @@ void UpdateBuilding(Building * b, Mob * mobs, int mobs_count, Building * buildin
 				b->target.y = m.body.y + m.body.height / 2.f;
 
 				mobs[i].life -= b->damages;
+				if(mobs[i].life <= 0)
+					*money += 5;
 
 				targeted = 1;
 				break;
@@ -135,6 +137,7 @@ void UpdateBuilding(Building * b, Mob * mobs, int mobs_count, Building * buildin
 			if(m.dead == 0 && norm < 500)
 			{
 				mobs[i].life -= b->damages;
+				if(mobs[i].life <= 0) *money += 15;
 				b->life = 0;
 			}
 		}

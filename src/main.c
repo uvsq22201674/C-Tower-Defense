@@ -10,6 +10,7 @@
 
 #define MAX_MOB_COUNT 100
 
+
 int main(int argc, char ** argv)
 {
 
@@ -34,9 +35,9 @@ int main(int argc, char ** argv)
 	inv.item_size = 70.f;
 	inv.texture_pack = &pack;
 
-	AddItem(&inv, Turret, 150);
-	AddItem(&inv, Bomb, 200);
-	AddItem(&inv, Healer, 25);
+	AddItem(&inv, Turret, 150, 240);
+	AddItem(&inv, Bomb, 80, 2048);
+	AddItem(&inv, Healer, 25, 30);
 
 	int money = 150;
 
@@ -57,6 +58,12 @@ int main(int argc, char ** argv)
 	int frame_count = 0;
 	while(!WindowShouldClose())
 	{
+
+		for(int i = 0; i < 8; i++)
+		{
+			if(inv.delay[i] > 0)
+				inv.delay[i] --;
+		}
 
 		if(frame_count % 10 == 0)
 			money ++;
@@ -107,6 +114,7 @@ int main(int argc, char ** argv)
 			if(can_place)
 			{
 				money -= inv.costs[inv.selected];
+				inv.delay[inv.selected] = inv.max_delay[inv.selected];
 
 				buildings[buildings_count] = CreateBuilding(rect.x, rect.y, inv.items[inv.selected], &pack);
 				buildings_count ++;
@@ -117,7 +125,7 @@ int main(int argc, char ** argv)
 			UpdateMob(&mobs[i], l);
 		for(int i = 0; i < buildings_count; i++)
 		{
-			UpdateBuilding(&buildings[i], mobs, mobs_count, buildings, buildings_count, &pack);
+			UpdateBuilding(&buildings[i], mobs, mobs_count, buildings, buildings_count, &pack, &money);
 		}	
 
 		BeginDrawing();

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void AddItem(Inventory * inv, int item, int price)
+void AddItem(Inventory * inv, int item, int price, int delay)
 {
 	for(int i = 0; i < 8; i++)
 	{
@@ -11,6 +11,7 @@ void AddItem(Inventory * inv, int item, int price)
 		{
 			inv->items[i] = item;
 			inv->costs[i] = price;
+			inv->max_delay[i] = delay;
 			break;
 		}
 	}
@@ -33,7 +34,9 @@ void DrawInventory(Inventory inv, int money)
 			Texture2D * t = &(inv.texture_pack->textures[inv.items[i]]);
 			Vector2 pos = {inv.x + 5, inv.y + i * inv.item_size + 5 * (i + 1)};
 			DrawTextureEx(*t, pos, 0.f, inv.item_size / (float) (t->width), WHITE);
-		
+			Color load_color = {255, 255, 255, 200};
+			DrawRectangle(pos.x, pos.y, inv.item_size, inv.item_size * (float) (inv.delay[i])/(float) (inv.max_delay[i]), load_color);
+
 			char cost[12];
 			sprintf(cost, "%d", inv.costs[i]);
 			strcat(cost, " $");
