@@ -97,7 +97,7 @@ int main(int argc, char ** argv)
 	int money = 150;
 
 	//Building list (fills when user clicks)
-	Building buildings[100] = {0};
+	Building buildings[300] = {0};
 	int buildings_count = 0;
 
 	//Mob list
