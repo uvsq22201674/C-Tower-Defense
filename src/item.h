@@ -6,6 +6,7 @@
 
 enum Item
 {
+	None = 0,
 	Turret = 1,
 	Healer = 2,
 	Bomb = 3,
@@ -28,6 +29,7 @@ struct Building
 
 	int life;
 	int damages;
+	float range;
 };
 typedef struct Building Building;
 

@@ -8,8 +8,17 @@
 #include "item.h"
 #include "mob.h"
 
-#define MAX_MOB_COUNT 100
+#define MAX_MOB_COUNT 225
 
+struct Button
+{
+	Rectangle box;
+	char * text;
+	Color color;
+
+	int value;
+};
+typedef struct Button Button;
 
 int main(int argc, char ** argv)
 {
@@ -24,6 +33,52 @@ int main(int argc, char ** argv)
 	SetItemTexture(&pack, Healer, "images/healer.png");
 	SetItemTexture(&pack, Bomb, "images/bomb.png");
 	SetItemTexture(&pack, Rip, "images/rip.png");
+
+	//Menu
+	Vector2 text_pos = {10.f, 10.f};
+
+	int button_count = 3;
+	Button buttons[] = {
+		{{240, 200, 320, 100}, "Play", RED, 1},
+		{{240, 330, 320, 100}, "Options", RED, 2},
+		{{240, 460, 320, 100}, "Quit", RED, 3}
+	};
+
+	int close_menu = 0;
+	while(!WindowShouldClose() && !close_menu)
+	{
+
+		BeginDrawing();
+
+			ClearBackground(BLACK);
+
+			DrawTextEx(GetFontDefault(), "Essential C Tower Defense", text_pos, 60, 4, RED); 
+
+			for(int i = 0; i < button_count; i++)
+			{
+				Color col = buttons[i].color;
+
+				if(CheckCollisionPointRec(GetMousePosition(), buttons[i].box))
+				{
+					col.a -= 50;
+					
+					if(IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+					{
+						close_menu = buttons[i].value;
+
+					}
+				}
+
+				DrawRectangleRec(buttons[i].box, col);
+				DrawText(buttons[i].text, buttons[i].box.x + 10.f, buttons[i].box.y + 10.f, buttons[i].box.height - 20, BLACK);
+			}
+
+		EndDrawing();
+	}
+
+	if(close_menu == 3)
+		goto Quit;
+
 
 	//Loading tiles
 	Level l = LoadLevel("levels/test.lvl");
@@ -51,9 +106,11 @@ int main(int argc, char ** argv)
 
 	//Camera
 	Camera2D cam = {0};
-	cam.zoom = 1.f;
+	cam.zoom = 800.f / (float) (l.width * 100.f);
 
 	const float zoom_precision = 15.f;
+
+	int passed = 0;
 
 	int frame_count = 0;
 	while(!WindowShouldClose())
@@ -70,7 +127,13 @@ int main(int argc, char ** argv)
 
 		if(mobs_count < MAX_MOB_COUNT && frame_count%60 == 0)
 		{
-			mobs[mobs_count] = CreateMob(l);
+			if(frame_count != 0 && mobs_count % 75 == 0)
+				mobs[mobs_count] = CreateMob(l, Barxeid);
+			else if(mobs_count > 75 && mobs_count%10 == 0)
+				mobs[mobs_count] = CreateMob(l, Sundar);
+			else
+				mobs[mobs_count] = CreateMob(l, Zox);
+			
 			mobs_count ++;
 		}
 
@@ -91,7 +154,7 @@ int main(int argc, char ** argv)
 		//Left click
 		else if(InventoryClicked(&inv))
 		{}
-		else if(IsMouseButtonDown(MOUSE_BUTTON_LEFT) && money >= inv.costs[inv.selected])
+		else if(frame_count > 10 && IsMouseButtonDown(MOUSE_BUTTON_LEFT) && money >= inv.costs[inv.selected])
 		{
 			//Placing new building if tile is valid (Not a path and not already taken)
 			Rectangle rect = {GetScreenToWorld2D(GetMousePosition(), cam).x,
@@ -111,6 +174,8 @@ int main(int argc, char ** argv)
 			{
 				can_place = 0;
 			}
+			if(inv.items[inv.selected] == None)
+				can_place = 0;
 			if(can_place)
 			{
 				money -= inv.costs[inv.selected];
@@ -122,7 +187,7 @@ int main(int argc, char ** argv)
 		}
 
 		for(int i = 0; i < mobs_count; i++)
-			UpdateMob(&mobs[i], l);
+			UpdateMob(&mobs[i], l, &passed);
 		for(int i = 0; i < buildings_count; i++)
 		{
 			UpdateBuilding(&buildings[i], mobs, mobs_count, buildings, buildings_count, &pack, &money);
@@ -148,22 +213,29 @@ int main(int argc, char ** argv)
 
 			EndMode2D();
 		
-			DrawInventory(inv, money);
+			DrawInventory(inv, money, cam);
 			char money_s[10];
 			sprintf(money_s, "%d", money);
 			char to_draw[18] = "Money : ";
 			strcat(to_draw, money_s);
 			strcat(to_draw, " $");
-
 			DrawText(to_draw, 10, 650, 20, YELLOW);
 
-			DrawFPS(10, 700);
+			char passed_s[10];
+			sprintf(passed_s, "%d", passed);
+			char to_draw1[26] = "Missed aliens : ";
+			strcat(to_draw1, passed_s);
+			DrawText(to_draw1, 10, 700, 20, RED);
+
+			DrawFPS(10, 750);
+
 		EndDrawing();
 
 		frame_count++;
 	}
 
 	//End
+Quit:
 	UnloadTexturePack(&pack);
 
 	return EXIT_SUCCESS;

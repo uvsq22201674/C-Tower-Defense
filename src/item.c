@@ -18,14 +18,17 @@ Building CreateBuilding(float x, float y, Item type, TexturePack * pack)
 		case Turret:
 			b.life = 100;
 			b.damages = 1;
+			b.range = 200.f;
 		break;
 		case Healer:
 			b.life = 10;
 			b.damages = 1;
+			b.range = 200.f;
 		break; 
 		case  Bomb:
 			b.life = 10;
 			b.damages = 100;
+			b.range = 500.f;
 		break;
 	}
 
@@ -67,7 +70,7 @@ void UpdateBuilding(Building * b, Mob * mobs, int mobs_count, Building * buildin
 
 			float norm = sqrt(pow(b->x - m.body.x - m.body.width / 2.f, 2) + pow(b->y - m.body.y - m.body.height / 2.f, 2));
 
-			if(m.dead == 0 && norm < 200)
+			if(m.dead == 0 && norm < b->range)
 			{
 				float angle = acos((m.body.x + m.body.width / 2.f - b->x)/norm);
 				if(m.body.y + m.body.height/2.f < b->y)
@@ -79,7 +82,7 @@ void UpdateBuilding(Building * b, Mob * mobs, int mobs_count, Building * buildin
 
 				mobs[i].life -= b->damages;
 				if(mobs[i].life <= 0)
-					*money += 5;
+					*money += 15;
 
 				targeted = 1;
 				break;
@@ -102,7 +105,7 @@ void UpdateBuilding(Building * b, Mob * mobs, int mobs_count, Building * buildin
 
 			float norm = sqrt(pow(b->x - m.x, 2) + pow(b->y - m.y, 2));
 
-			if(m.life < 100 && m.life > 0 && m.type != Healer && norm < 200)
+			if(m.life < 100 && m.life > 0 && m.type != Healer && norm < b->range)
 			{
 				float angle = acos((m.x - b->x)/norm);
 				if(m.y < b->y)
@@ -134,10 +137,10 @@ void UpdateBuilding(Building * b, Mob * mobs, int mobs_count, Building * buildin
 
 			float norm = sqrt(pow(b->x - m.body.x - m.body.width / 2.f, 2) + pow(b->y - m.body.y - m.body.height / 2.f, 2));
 
-			if(m.dead == 0 && norm < 500)
+			if(m.dead == 0 && norm < b->range)
 			{
 				mobs[i].life -= b->damages;
-				if(mobs[i].life <= 0) *money += 15;
+				if(mobs[i].life <= 0) *money += 5;
 				b->life = 0;
 			}
 		}

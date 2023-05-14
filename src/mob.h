@@ -13,20 +13,31 @@ enum Direction
 };
 typedef enum Direction Direction;
 
+enum Specie
+{
+	Zox = 1 << 0,
+	Barxeid = 1 << 1,
+	Sundar = 1 << 2
+};
+typedef enum Specie Specie;
+
 struct Mob
 {
 	Rectangle body;
 
+	int max_life;
 	int life;
 
 	Direction dir;
 
 	int dead;
+
+	Specie specie;
 };
 typedef struct Mob Mob;
 
-Mob CreateMob(Level);
-void UpdateMob(Mob *, Level);
+Mob CreateMob(Level, Specie);
+void UpdateMob(Mob *, Level, int*);
 void DrawMob(Mob);
 Vector2 DirectionToVector(Direction);
 int IsTilePath(Level, float, float);

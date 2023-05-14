@@ -17,8 +17,29 @@ void AddItem(Inventory * inv, int item, int price, int delay)
 	}
 }
 
-void DrawInventory(Inventory inv, int money)
+void DrawInventory(Inventory inv, int money, Camera2D cam)
 {
+	float radius = 100.f;
+
+	switch(inv.items[inv.selected])
+	{
+		case Turret:
+			radius = 200.f;
+		break;
+		case Healer:
+			radius = 200.f;
+		break;
+		case Bomb:
+			radius = 500.f;
+		break;  
+ 	}
+ 	Color zone = {200, 50, 90, 100};
+
+ 	Vector2 in_world = GetScreenToWorld2D(GetMousePosition(), cam);
+ 	BeginMode2D(cam);
+ 		DrawCircleV(in_world, radius, zone);
+ 	EndMode2D();
+
 	DrawRectangle(inv.x, inv.y, inv.item_size + 10, (inv.item_size + 5) * 8 + 5, BROWN);
 
 	for(int i = 0; i < 8; i ++)
