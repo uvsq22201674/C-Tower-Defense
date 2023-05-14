@@ -12,3 +12,4 @@ Place selected item by clicking on any grass tile which is not already occupied.
 # TODO
 
 Balance (it's way too easy)
+Menu
